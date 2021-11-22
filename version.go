@@ -16,8 +16,8 @@ package otelhttp
 
 // Version is the current release version of the otelhttp instrumentation.
 func Version() string {
-	return "0.26.1"
-	// This string is updated by the pre_release.sh script during release
+	// version of the truss otelhttp package
+	return "0.27.1"
 }
 
 // SemVersion is the semantic version to be supplied to tracer/meter creation.
