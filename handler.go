@@ -24,6 +24,7 @@ import (
 	"go.opentelemetry.io/otel"
 	"go.opentelemetry.io/otel/attribute"
 	"go.opentelemetry.io/otel/metric"
+	"go.opentelemetry.io/otel/metric/unit"
 	"go.opentelemetry.io/otel/propagation"
 	semconv "go.opentelemetry.io/otel/semconv/v1.7.0"
 	"go.opentelemetry.io/otel/trace"
@@ -102,7 +103,7 @@ func (h *Handler) createMeasures() {
 	responseBytesCounter, err := h.meter.NewInt64Counter(ResponseContentLength)
 	handleErr(err)
 
-	serverLatencyMeasure, err := h.meter.NewInt64Histogram(ServerLatency)
+	serverLatencyMeasure, err := h.meter.NewInt64Histogram(ServerLatency, metric.WithUnit(unit.Milliseconds))
 	handleErr(err)
 
 	requestCount, err := h.meter.NewInt64Counter(RequestCount)
@@ -203,7 +204,7 @@ func (h *Handler) ServeHTTP(w http.ResponseWriter, r *http.Request) {
 	requestCountAttributes := append(attributes, semconv.HTTPStatusCodeKey.Int(rww.statusCode))
 	h.counters[RequestCount].Add(ctx, 1, requestCountAttributes...)
 
-	elapsedTime := time.Since(requestStartTime).Microseconds()
+	elapsedTime := time.Since(requestStartTime).Milliseconds()
 
 	h.valueRecorders[ServerLatency].Record(ctx, elapsedTime, attributes...)
 }
