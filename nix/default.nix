@@ -27,6 +27,15 @@ in buildEnv {
       rev = "9c3de9dd586506a7694fc9f19d459ad381239e34";
     }) {}).pre-commit
 
+    (import (builtins.fetchGit {
+      # Descriptive name to make the store path easier to identify
+      name = "act-0.2.24";
+      url = "https://github.com/NixOS/nixpkgs/";
+      ref = "refs/heads/nixpkgs-unstable";
+      rev = "a1de1fc28b27da87a84a0b4c9128972ac4a48193";
+    }) {}).act
+
+
   ];
 
 }
