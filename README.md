@@ -14,6 +14,11 @@ have to re-implement it ourselves.
 
 as of [v.0.26.1](https://github.com/open-telemetry/opentelemetry-go-contrib/commit/7876cd14dc5f09765205caa0fb420fafe23141aa)
 
+This copy does not create separate packages for the test and
+example code, and so did not copy the `go.{mod,sum}` files from those
+directories.
+
+
 ## Setup
 
 1. You will need go and pre-commit installed
