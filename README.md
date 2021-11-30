@@ -14,3 +14,21 @@ have to re-implement it ourselves.
 
 as of [v.0.26.1](https://github.com/open-telemetry/opentelemetry-go-contrib/commit/7876cd14dc5f09765205caa0fb420fafe23141aa)
 
+## Setup
+
+1. You will need go and pre-commit installed
+1. run `pre-commit install && pre-commit install-hooks`
+
+### Running the tests
+
+    go test ./...
+
+### Checking CI
+
+Install [act](https://github.com/nektos/act)
+
+To test what happens on a PR
+
+    act pull_request
+
+
