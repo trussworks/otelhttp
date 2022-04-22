@@ -19,12 +19,14 @@ import (
 	"net/http"
 	"time"
 
+	"go.opentelemetry.io/otel/metric/instrument/syncfloat64"
+	"go.opentelemetry.io/otel/metric/instrument/syncint64"
+
 	"github.com/felixge/httpsnoop"
 
 	"go.opentelemetry.io/otel"
 	"go.opentelemetry.io/otel/attribute"
 	"go.opentelemetry.io/otel/metric"
-	"go.opentelemetry.io/otel/metric/unit"
 	"go.opentelemetry.io/otel/propagation"
 	semconv "go.opentelemetry.io/otel/semconv/v1.7.0"
 	"go.opentelemetry.io/otel/trace"
@@ -48,8 +50,8 @@ type Handler struct {
 	writeEvent        bool
 	filters           []Filter
 	spanNameFormatter func(string, *http.Request) string
-	counters          map[string]metric.Int64Counter
-	valueRecorders    map[string]metric.Int64Histogram
+	counters          map[string]syncint64.Counter
+	valueRecorders    map[string]syncfloat64.Histogram
 }
 
 func defaultHandlerFormatter(operation string, _ *http.Request) string {
@@ -94,19 +96,19 @@ func handleErr(err error) {
 }
 
 func (h *Handler) createMeasures() {
-	h.counters = make(map[string]metric.Int64Counter)
-	h.valueRecorders = make(map[string]metric.Int64Histogram)
+	h.counters = make(map[string]syncint64.Counter)
+	h.valueRecorders = make(map[string]syncfloat64.Histogram)
 
-	requestBytesCounter, err := h.meter.NewInt64Counter(RequestContentLength)
+	requestBytesCounter, err := h.meter.SyncInt64().Counter(RequestContentLength)
 	handleErr(err)
 
-	responseBytesCounter, err := h.meter.NewInt64Counter(ResponseContentLength)
+	responseBytesCounter, err := h.meter.SyncInt64().Counter(ResponseContentLength)
 	handleErr(err)
 
-	serverLatencyMeasure, err := h.meter.NewInt64Histogram(ServerLatency, metric.WithUnit(unit.Milliseconds))
+	serverLatencyMeasure, err := h.meter.SyncFloat64().Histogram(ServerLatency)
 	handleErr(err)
 
-	requestCount, err := h.meter.NewInt64Counter(RequestCount)
+	requestCount, err := h.meter.SyncInt64().Counter(RequestCount)
 	handleErr(err)
 
 	h.counters[RequestContentLength] = requestBytesCounter
@@ -204,7 +206,7 @@ func (h *Handler) ServeHTTP(w http.ResponseWriter, r *http.Request) {
 	requestCountAttributes := append(attributes, semconv.HTTPStatusCodeKey.Int(rww.statusCode))
 	h.counters[RequestCount].Add(ctx, 1, requestCountAttributes...)
 
-	elapsedTime := time.Since(requestStartTime).Milliseconds()
+	elapsedTime := float64(time.Since(requestStartTime)) / float64(time.Millisecond)
 
 	h.valueRecorders[ServerLatency].Record(ctx, elapsedTime, attributes...)
 }
