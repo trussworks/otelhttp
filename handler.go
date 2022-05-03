@@ -19,8 +19,10 @@ import (
 	"net/http"
 	"time"
 
+	"go.opentelemetry.io/otel/metric/instrument"
 	"go.opentelemetry.io/otel/metric/instrument/syncfloat64"
 	"go.opentelemetry.io/otel/metric/instrument/syncint64"
+	"go.opentelemetry.io/otel/metric/unit"
 
 	"github.com/felixge/httpsnoop"
 
@@ -99,13 +101,19 @@ func (h *Handler) createMeasures() {
 	h.counters = make(map[string]syncint64.Counter)
 	h.valueRecorders = make(map[string]syncfloat64.Histogram)
 
-	requestBytesCounter, err := h.meter.SyncInt64().Counter(RequestContentLength)
+	requestBytesCounter, err := h.meter.SyncInt64().
+		Counter(RequestContentLength,
+			instrument.WithUnit(unit.Bytes))
 	handleErr(err)
 
-	responseBytesCounter, err := h.meter.SyncInt64().Counter(ResponseContentLength)
+	responseBytesCounter, err := h.meter.SyncInt64().
+		Counter(ResponseContentLength,
+			instrument.WithUnit(unit.Bytes))
 	handleErr(err)
 
-	serverLatencyMeasure, err := h.meter.SyncFloat64().Histogram(ServerLatency)
+	serverLatencyMeasure, err := h.meter.SyncFloat64().
+		Histogram(ServerLatency,
+			instrument.WithUnit(unit.Milliseconds))
 	handleErr(err)
 
 	requestCount, err := h.meter.SyncInt64().Counter(RequestCount)
@@ -206,7 +214,7 @@ func (h *Handler) ServeHTTP(w http.ResponseWriter, r *http.Request) {
 	requestCountAttributes := append(attributes, semconv.HTTPStatusCodeKey.Int(rww.statusCode))
 	h.counters[RequestCount].Add(ctx, 1, requestCountAttributes...)
 
-	elapsedTime := float64(time.Since(requestStartTime)) / float64(time.Millisecond)
+	elapsedTime := float64(time.Since(requestStartTime).Milliseconds())
 
 	h.valueRecorders[ServerLatency].Record(ctx, elapsedTime, attributes...)
 }
