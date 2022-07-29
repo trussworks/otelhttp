@@ -28,7 +28,7 @@ import (
 
 	"go.opentelemetry.io/contrib/instrumentation/net/http/otelhttp"
 	"go.opentelemetry.io/otel/attribute"
-	"go.opentelemetry.io/otel/metric/nonrecording"
+	"go.opentelemetry.io/otel/metric"
 	"go.opentelemetry.io/otel/propagation"
 	sdktrace "go.opentelemetry.io/otel/sdk/trace"
 	"go.opentelemetry.io/otel/sdk/trace/tracetest"
@@ -48,7 +48,7 @@ func TestHandlerBasics(t *testing.T) {
 	provider := sdktrace.NewTracerProvider(sdktrace.WithSpanProcessor(spanRecorder))
 
 	// TODO: Replace with in memory exporter https://github.com/open-telemetry/opentelemetry-go/issues/2722
-	meterProvider := nonrecording.NewNoopMeterProvider()
+	meterProvider := metric.NewNoopMeterProvider()
 
 	operation := "test_handler"
 
