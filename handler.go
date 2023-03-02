@@ -20,9 +20,6 @@ import (
 	"time"
 
 	"go.opentelemetry.io/otel/metric/instrument"
-	"go.opentelemetry.io/otel/metric/instrument/syncfloat64"
-	"go.opentelemetry.io/otel/metric/instrument/syncint64"
-	"go.opentelemetry.io/otel/metric/unit"
 
 	"github.com/felixge/httpsnoop"
 
@@ -52,8 +49,8 @@ type Handler struct {
 	writeEvent        bool
 	filters           []Filter
 	spanNameFormatter func(string, *http.Request) string
-	counters          map[string]syncint64.Counter
-	valueRecorders    map[string]syncfloat64.Histogram
+	counters          map[string]instrument.Int64Counter
+	valueRecorders    map[string]instrument.Float64Histogram
 }
 
 func defaultHandlerFormatter(operation string, _ *http.Request) string {
@@ -98,25 +95,25 @@ func handleErr(err error) {
 }
 
 func (h *Handler) createMeasures() {
-	h.counters = make(map[string]syncint64.Counter)
-	h.valueRecorders = make(map[string]syncfloat64.Histogram)
+	h.counters = make(map[string]instrument.Int64Counter)
+	h.valueRecorders = make(map[string]instrument.Float64Histogram)
 
-	requestBytesCounter, err := h.meter.SyncInt64().
-		Counter(RequestContentLength,
-			instrument.WithUnit(unit.Bytes))
+	requestBytesCounter, err := h.meter.
+		Int64Counter(RequestContentLength,
+			instrument.WithUnit("By"))
 	handleErr(err)
 
-	responseBytesCounter, err := h.meter.SyncInt64().
-		Counter(ResponseContentLength,
-			instrument.WithUnit(unit.Bytes))
+	responseBytesCounter, err := h.meter.
+		Int64Counter(ResponseContentLength,
+			instrument.WithUnit("By"))
 	handleErr(err)
 
-	serverLatencyMeasure, err := h.meter.SyncFloat64().
-		Histogram(ServerLatency,
-			instrument.WithUnit(unit.Milliseconds))
+	serverLatencyMeasure, err := h.meter.
+		Float64Histogram(ServerLatency,
+			instrument.WithUnit("ms"))
 	handleErr(err)
 
-	requestCount, err := h.meter.SyncInt64().Counter(RequestCount)
+	requestCount, err := h.meter.Int64Counter(RequestCount)
 	handleErr(err)
 
 	h.counters[RequestContentLength] = requestBytesCounter

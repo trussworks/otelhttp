@@ -4,7 +4,7 @@
 // you may not use this file except in compliance with the License.
 // You may obtain a copy of the License at
 //
-//     http://www.apache.org/licenses/LICENSE-2.0
+//	http://www.apache.org/licenses/LICENSE-2.0
 //
 // Unless required by applicable law or agreed to in writing, software
 // distributed under the License is distributed on an "AS IS" BASIS,
@@ -95,6 +95,9 @@ func ExampleNewHandler() {
 		),
 	)
 
+	// "G114: Use of net/http serve function that has no support for setting timeouts"
+	// This is just used in a test, so should be safe to suppress.
+	// #nosec G114
 	if err := http.ListenAndServe(":7777",
 		otelhttp.NewHandler(&mux, "server",
 			otelhttp.WithMessageEvents(otelhttp.ReadEvents, otelhttp.WriteEvents),
