@@ -3,19 +3,17 @@ linters-settings:
     check-shadowing: true
 linters:
   enable:
-    - deadcode
     - gofmt
     - goimports
     - revive
     - gosec
     - govet
     - ineffassign
-    - structcheck
     - typecheck
-    - varcheck
     - gomodguard
     - errcheck
     - staticcheck
+    - unused
   fast: false
 issues:
   fix: true
