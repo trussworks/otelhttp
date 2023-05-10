@@ -10,21 +10,25 @@ in buildEnv {
   name = "otelhttp-packages";
   paths = [
 
-    (import (builtins.fetchGit {
-      # Descriptive name to make the store path easier to identify
-      name = "go-1.18.1";
-      url = "https://github.com/NixOS/nixpkgs/";
-      ref = "refs/heads/nixpkgs-unstable";
-      rev = "d08394e7cd5c7431a1e8f53b7f581e74ee909548";
-    }) {}).go_1_18
+    (import
+      (builtins.fetchGit {
+        # Descriptive name to make the store path easier to identify
+        name = "go-1.20.3";
+        url = "https://github.com/NixOS/nixpkgs/";
+        ref = "refs/heads/nixpkgs-unstable";
+        rev = "96ba1c52e54e74c3197f4d43026b3f3d92e83ff9";
+      })
+      { }).go_1_20
 
-    (import (builtins.fetchGit {
-      # Descriptive name to make the store path easier to identify
-      name = "pre-commit-2.17.0";
-      url = "https://github.com/NixOS/nixpkgs/";
-      ref = "refs/heads/nixpkgs-unstable";
-      rev = "7945280b9b2e348738cb9d164a0848feaf2c311d";
-    }) {}).pre-commit
+    (import
+      (builtins.fetchGit {
+        # Descriptive name to make the store path easier to identify
+        name = "pre-commit-3.2.2";
+        url = "https://github.com/NixOS/nixpkgs/";
+        ref = "refs/heads/nixpkgs-unstable";
+        rev = "b605a205390e53e18c03329ab3dba489970c1e0a";
+      })
+      { }).pre-commit
 
     (import (builtins.fetchGit {
       # Descriptive name to make the store path easier to identify
