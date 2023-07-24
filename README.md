@@ -1,5 +1,8 @@
 # otelhttp
 
+*This repo is archived.* Recent updates to open-telemetry-go-contrib
+have rendered it obsolete.
+
 This is a copy from [opentelemetry-go-contrib](https://github.com/open-telemetry/opentelemetry-go-contrib/tree/main/instrumentation)
 
 The README there says, in part
